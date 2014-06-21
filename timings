@@ -1,0 +1,63 @@
+ - download database dump
+	wget http://download.wikimedia.org/enwiki/20080103/enwiki-20080103-pages-articles.xml.bz2
+
+ - install a whole LAMP environment with apache2, php5 and mysql5
+ 
+ - checkout the mediawiki to /var/www/
+	svn checkout http://svn.wikimedia.org/svnroot/mediawiki/trunk/phase3 /var/www
+
+ - remove the extension dir from the checkout
+
+ - checkout the extensions to /var/www/extensions
+	svn checkout http://svn.wikimedia.org/svnroot/mediawiki/trunk/extensions /var/www/extensions
+
+ - patch mediawiki with mediawiki.diff
+	patch -p0 < mediawikipatch.diff
+
+ - configure /etc/apache2/sites-enabled/000-default so that mediawiki loads when you access localhost
+
+ - goto http://localhost and finish the mediawiki install
+ 
+ - add ParserFunctions Extension by adding
+	require_once( "$IP/extensions/ParserFunctions/ParserFunctions.php" );
+   to LocalSettings.php
+ 
+ - download xml2sql from <url to be added> ./configure and make it
+ 
+ - convert the xml to sql
+	time cat enwiki.xml | ./xml2sql-0.5/xml2sql -o sqldump/ -v -m
+ 
+ - import into sql database
+	time mysql -f -u root -p mediawiki < sqldump/page.sql
+	time mysql -f -u root -p mediawiki < sqldump/revision.sql
+	time mysql -f -u root -p mediawiki < sqldump/text.sql
+ 
+ - dump everything
+	time php maintenance/dumpHTML.php -s <startid> -e <endid>
+ 
+apt-get install ocaml imagemagick gs cjk-latex tetex-extra php4-imagick binutils gcc
+cd math/ && make
+$wgUseTeX           = true;
+
+	putcolumn(&rev_tbl, "NULL", 0);
+	putcolumn(&rev_tbl, "NULL", 0);
+
+require_once( "$IP/extensions/ParserFunctions/ParserFunctions.php" );
+
+
+downloading: 40m32.418s
+
+extracting: 7m7.119s
+
+xml2sql: 15m12.989s
+time cat ndswiki-20080109-pages-articles.xml | ./xml2sql-0.5/xml2sql -o sqldump.nds/ -v -m
+
+insert: 119m35.751s 135m12.662s 283m11.183s
+time mysql -f -u root -p mediawiki < sqldump/page.sql
+
+dumpHTML:
+time php maintenance/dumpHTML.php
+
+removefiles:
+transform:
+

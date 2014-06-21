@@ -1,0 +1,55 @@
+Index: maintenance/dumpHTML.inc
+===================================================================
+--- maintenance/dumpHTML.inc	(revision 29586)
++++ maintenance/dumpHTML.inc	(working copy)
+@@ -24,7 +24,7 @@
+ 	var $interwiki = true;
+ 
+ 	# Depth of HTML directory tree
+-	var $depth = 3;
++	var $depth = 0;
+ 
+ 	# Directory that commons images are copied into
+ 	var $sharedStaticDirectory;
+@@ -835,30 +835,29 @@
+ 			return 'index.html';
+ 		}
+ 
+-		return $this->getHashedDirectory( $title ) . '/' .
+-			$this->getFriendlyName( $dbkey ) . '.html';
++		return $this->getFriendlyName( $dbkey );
+ 	}
+ 
+ 	function getFriendlyName( $name ) {
+ 		global $wgLang;
+ 		# Replace illegal characters for Windows paths with underscores
+-		$friendlyName = strtr( $name, '/\\*?"<>|~', '_________' );
++		$friendlyName = str_replace( '/', '_', $name );
+ 
+ 		# Work out lower case form. We assume we're on a system with case-insensitive
+ 		# filenames, so unless the case is of a special form, we have to disambiguate
+-		if ( function_exists( 'mb_strtolower' ) ) {
+-			$lowerCase = $wgLang->ucfirst( mb_strtolower( $name ) );
+-		} else {
+-			$lowerCase = ucfirst( strtolower( $name ) );
+-		}
++		#if ( function_exists( 'mb_strtolower' ) ) {
++		#	$lowerCase = $wgLang->ucfirst( mb_strtolower( $name ) );
++		#} else {
++		#	$lowerCase = ucfirst( strtolower( $name ) );
++		#}
+ 
+ 		# Make it mostly unique
+-		if ( $lowerCase != $friendlyName  ) {
+-			$friendlyName .= '_' . substr(md5( $name ), 0, 4);
+-		}
++		#if ( $lowerCase != $friendlyName  ) {
++		#	$friendlyName .= '_' . substr(md5( $name ), 0, 4);
++		#}
+ 		# Handle colon specially by replacing it with tilde
+ 		# Thus we reduce the number of paths with hashes appended
+-		$friendlyName = str_replace( ':', '~', $friendlyName );
++		#$friendlyName = str_replace( ':', '~', $friendlyName );
+ 
+ 		return $friendlyName;
+ 	}
